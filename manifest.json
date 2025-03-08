@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "YouTube Suggestions Limiter",
+  "name": "De-Scroll",
   "version": "1.0",
-  "description": "Limits the number of suggested videos on YouTube to 20.abc",
+  "description": "Limits time spent on YouTube and Reddit.",
   "permissions": [
     "tabs",
     "activeTab",
@@ -25,6 +25,7 @@
     }
   ],
   "icons": {
-    "48": "icon.png"
+    "48": "icon.png",
+    "48": "icon-active.png"
   }
 }

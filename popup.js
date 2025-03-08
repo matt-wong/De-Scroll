@@ -23,8 +23,8 @@ function setTimerValue(){
             const timeRemaining = timeLimit - (data.timeSpent || 0);
             const remainingMinutes = Math.floor(timeRemaining / 60000);
             const remainingSeconds = Math.floor((timeRemaining % 60000) / 1000);
-
-            spentTimerDisplay.innerText = `Time Spent: ${minutesSpent}:${secondsSpent.toString().padStart(2, '0')}`;
+            
+            spentTimerDisplay.innerText = `Time Spent: ${minutesSpent || 0}:${(secondsSpent || 0).toString().padStart(2, '0')}`;
             remainingTimerDisplay.innerText = `Time Remaining: ${remainingMinutes}:${remainingSeconds.toString().padStart(2, '0')}`;
         });
 }

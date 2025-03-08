@@ -54,6 +54,12 @@ function checkSiteAccess(tab) {
 function startTracking(tabId) {
     if (!!trackingInterval){return;}
 
+    chrome.action.setIcon({
+        path: {
+        "48": "icon-active.png"
+        }
+    });
+
     trackingInterval = setInterval(() => {
         console.log("Tracking time");
         chrome.storage.local.get(["timeSpent"], (data) => {
@@ -76,6 +82,13 @@ function startTracking(tabId) {
 }
 
 function stopTracking() {
+
+    chrome.action.setIcon({
+        path: {
+          "48": "icon.png"
+        }
+      });
+
     if (trackingInterval) {
         console.log("Stopping tracking");
         clearInterval(trackingInterval);
