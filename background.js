@@ -75,10 +75,6 @@ function startTracking(tabId) {
             }
         });
     }, 1000);
-
-    chrome.tabs.onRemoved.addListener((closedTabId) => {
-        if (closedTabId === tabId) clearInterval(interval);
-    });
 }
 
 function stopTracking() {
