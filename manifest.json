@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Suggestions Limiter",
+  "version": "1.0",
+  "description": "Limits the number of suggested videos on YouTube to 20.abc",
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "declarativeContent",
+    "storage",
+    "scripting",
+    "alarms",
+    "webNavigation"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://www.youtube.com/*", "*://www.reddit.com/"],
+      "js": ["content.js"]
+    }
+  ],
+  "icons": {
+    "48": "icon.png"
+  }
+}
