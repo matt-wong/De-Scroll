@@ -2,32 +2,11 @@ function limitSuggestedVideos() {
   console.log(window.location.hostname);
 
   if (/youtube\.com$/.test(window.location.hostname)) {
-    console.log("youtube found?");
-    const suggestionsContainer = document.querySelector('#page-manager.ytd-app');
-    if (suggestionsContainer) {
-      console.log("suggestionsContainer found and hidden");
-      //suggestionsContainer.style.display = 'none'
-    }
-
-    // Hide elements with id="contents"
-    const contentsElement = document.querySelector('#contents');
-    if (contentsElement) {
-      console.log("secondary element found and hidden");
-      contentsElement.style.backgroundColor = 'red';
-    }
-
     const ytdItemSectionRenderers = document.querySelectorAll('ytd-item-section-renderer');
     ytdItemSectionRenderers.forEach(el => {
       el.style.display = 'none';
     });
   }
-
-  // const suggestionsContainer = document.querySelector('main#main-content');
-  // if (suggestionsContainer) {
-  //   console.log("reddit found");
-  //   suggestionsContainer.style.display = 'none'
-  // }
-
 }
 
 // Run the function when the page loads and when the user navigates
