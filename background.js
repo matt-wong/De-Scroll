@@ -1,8 +1,10 @@
 console.log("🔄 Background script is alive1!");
 
-const TIME_LIMIT = 1 * 60 * 1000;
+const TIME_LIMIT = 2 * 60 * 1000;
 const TRACKED_SITES = [
     /^https?:\/\/(www\.)?youtube\.com\/feed\/subscriptions/,
+    /^https?:\/\/(www\.)?youtube\.com\/?$/,
+    /^https?:\/\/(www\.)?youtube\.ca\/?$/,
     /^https?:\/\/(www\.)?reddit\.com(\/r\/[^\/]+)?\/?$/
 ];
 let trackingInterval = undefined;

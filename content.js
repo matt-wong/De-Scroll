@@ -2,11 +2,20 @@ function limitSuggestedVideos() {
   console.log(window.location.hostname);
 
   if (/youtube\.com$/.test(window.location.hostname)) {
-    const ytdItemSectionRenderers = document.querySelectorAll('ytd-item-section-renderer');
-    ytdItemSectionRenderers.forEach(el => {
-      el.style.display = 'none';
+    const secondaryColumn = document.querySelector('#secondary');
+    if (secondaryColumn) {
+      console.log("Secondary column found");
+      secondaryColumn.style.display = 'none';
+    }
+    
+    // Hide all elements with id "dismissible"
+    const dismissibleElements = document.querySelectorAll('#dismissible');
+    dismissibleElements.forEach(element => {
+      element.style.display = 'none';
     });
   }
+
+  
 }
 
 // Run the function when the page loads and when the user navigates
