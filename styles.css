@@ -1,0 +1,6 @@
+/* YouTube De-Scroll Styles */
+
+/* Hide the secondary column (suggested videos sidebar) */
+ytd-watch-next-secondary-results-renderer {
+  display: none !important;
+}
