@@ -4,3 +4,11 @@
 ytd-watch-next-secondary-results-renderer {
   display: none !important;
 }
+
+ytd-in-feed-ad-layout-renderer {
+  display: none !important;
+}
+
+#dismissible {
+  display: none !important;
+}
