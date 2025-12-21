@@ -1,6 +1,6 @@
 console.log("🔄 Background script is alive1!");
 
-const TIME_LIMIT = 2 * 60 * 1000;
+const TIME_LIMIT = 0.5 * 60 * 1000;
 const TRACKED_SITES = [
     /^https?:\/\/(www\.)?youtube\.com\/feed\/subscriptions/,
     /^https?:\/\/(www\.)?youtube\.com\/?$/,
@@ -70,7 +70,9 @@ function startTracking(tabId) {
             if (timeSpent >= TIME_LIMIT) {
                 clearInterval(trackingInterval);
                 console.log("Ran out of time!")
-                chrome.tabs.update(tabId, { url: "chrome://bookmarks/" });
+                // Navigate to the extension's time limit page
+                const redirectUrl = chrome.runtime.getURL("time-limit.html");
+                chrome.tabs.update(tabId, { url: redirectUrl });
             } else {
                 console.log('setting timespent' + timeSpent)
                 chrome.storage.local.set({ timeSpent });
