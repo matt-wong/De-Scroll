@@ -104,6 +104,10 @@ function startTracking(tabId) {
             } else {
                 console.log('setting timespent' + timeSpent)
                 setTimeSpent(timeSpent);
+
+                const remainingMinutes = (Math.floor((TIME_LIMIT - timeSpent)/ (1000)) - 1).toString();
+                console.log(remainingMinutes);
+                chrome.action?.setBadgeText({ text: remainingMinutes });
             }
         });
     }, 1000);
