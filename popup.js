@@ -13,14 +13,35 @@ document.addEventListener("DOMContentLoaded", () => {
     setInterval(setTimerValue, 1000);
 });
 
-function setTimerValue(){
-        // Fetch time spent from storage
-        chrome.storage.local.get(["timeSpent"], (data) => {
+// Helper function to get current date string (YYYY-MM-DD)
+function getTodayDateString() {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+}
 
-            const minutesSpent = Math.floor(data.timeSpent / 60000);
-            const secondsSpent = Math.floor((data.timeSpent % 60000) / 1000);
+// Get timeSpent, automatically resetting if date has changed
+function getTimeSpent(callback) {
+    chrome.storage.local.get(["timeSpent", "lastResetDate"], (data) => {
+        const today = getTodayDateString();
+        const lastResetDate = data.lastResetDate;
+        
+        // If date has changed, reset timeSpent
+        if (lastResetDate !== today) {
+            chrome.storage.local.set({ timeSpent: 0, lastResetDate: today });
+            callback(0);
+        } else {
+            callback(data.timeSpent || 0);
+        }
+    });
+}
+
+function setTimerValue(){
+        // Fetch time spent from storage (with automatic date-based reset)
+        getTimeSpent((timeSpent) => {
+            const minutesSpent = Math.floor(timeSpent / 60000);
+            const secondsSpent = Math.floor((timeSpent % 60000) / 1000);
             
-            const timeRemaining = timeLimit - (data.timeSpent || 0);
+            const timeRemaining = timeLimit - timeSpent;
             const remainingMinutes = Math.floor(timeRemaining / 60000);
             const remainingSeconds = Math.floor((timeRemaining % 60000) / 1000);
             
@@ -54,7 +75,9 @@ function toggleCSS(event) {
                 }
                 `
             });
-            chrome.storage.local.set({ timeSpent : 9999999 });
+            // Set timeSpent to a high value to trigger limit, ensuring date is stored
+            const today = getTodayDateString();
+            chrome.storage.local.set({ timeSpent: 9999999, lastResetDate: today });
         } else {
             chrome.scripting.removeCSS({
                 target: { tabId: tabId },
