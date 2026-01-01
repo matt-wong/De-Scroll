@@ -1,6 +1,6 @@
 console.log("🔄 Background script is alive1!");
 
-const TIME_LIMIT = 1 * 60 * 1000;
+const TIME_LIMIT = 5 * 60 * 1000;
 const TRACKED_SITES = [
     /^https?:\/\/(www\.)?youtube\.com\/feed\/subscriptions/,
     /^https?:\/\/(www\.)?youtube\.com\/?$/,
@@ -105,10 +105,17 @@ function startTracking(tabId) {
                 console.log('setting timespent' + timeSpent)
                 setTimeSpent(timeSpent);
 
-                const remainingMinutes = (Math.floor((TIME_LIMIT - timeSpent)/ (1000)) - 1).toString();
-                console.log(remainingMinutes);
-                chrome.action?.setBadgeText({ text: remainingMinutes });
-            }
+                const remainingSeconds = Math.floor((TIME_LIMIT - timeSpent) / 1000);
+                const remainingMinutes = Math.floor(remainingSeconds / 60);
+                const displaySeconds = remainingSeconds % 60;
+
+                // Badge text is limited to 4 characters, so show just minutes or a compact format
+                const badgeText = remainingMinutes > 0 
+                    ? `${remainingMinutes}m`  // e.g., "5m" 
+                    : `${displaySeconds}s`;   // e.g., "30s" for under 1 minute
+
+                chrome.action.setBadgeText({ text: badgeText });
+                            }
         });
     }, 1000);
 }
