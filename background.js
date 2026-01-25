@@ -1,6 +1,6 @@
 console.log("🔄 Background script is alive1!");
 
-const TIME_LIMIT = 5000; // 1 * 60 * 1000;
+const TIME_LIMIT = 5 * 60 * 1000;
 const TRACKED_SITES = [
     /^https?:\/\/(www\.)?youtube\.com\/feed\/subscriptions/,
     /^https?:\/\/(www\.)?youtube\.com\/?$/,
@@ -35,9 +35,8 @@ function getTodayDateString() {
     const today = new Date();
     // 2026-01-25T20:32:48.912Z
     const timestamp = today.toISOString();
-    const withoutSeconds = timestamp.replace(/:\d{2}\.\d{3}Z$/, '');
-    // strip the seconds and milliseconds
-    return withoutSeconds;
+    
+    return timestamp.split('T')[0];
 }
 
 // Get timeSpent, automatically resetting if date has changed
@@ -45,7 +44,6 @@ async function getTimeSpent() {
     const data = await chrome.storage.local.get(["timeSpent"]);
     return data.timeSpent || 0;
 }
-
 // Set timeSpent, ensuring date is stored
 function setTimeSpent(timeSpent) {
     chrome.storage.local.set({ timeSpent });
