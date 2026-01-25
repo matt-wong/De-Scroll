@@ -1,6 +1,6 @@
 console.log("🔄 Background script is alive1!");
 
-const TIME_LIMIT = 5 * 60 * 1000;
+const TIME_LIMIT = 5000; // 1 * 60 * 1000;
 const TRACKED_SITES = [
     /^https?:\/\/(www\.)?youtube\.com\/feed\/subscriptions/,
     /^https?:\/\/(www\.)?youtube\.com\/?$/,
@@ -33,30 +33,22 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 // Helper function to get current date string (YYYY-MM-DD)
 function getTodayDateString() {
     const today = new Date();
-    return today.toISOString().split('T')[0];
+    // 2026-01-25T20:32:48.912Z
+    const timestamp = today.toISOString();
+    const withoutSeconds = timestamp.replace(/:\d{2}\.\d{3}Z$/, '');
+    // strip the seconds and milliseconds
+    return withoutSeconds;
 }
 
 // Get timeSpent, automatically resetting if date has changed
-function getTimeSpent(callback) {
-    chrome.storage.local.get(["timeSpent", "lastResetDate"], (data) => {
-        const today = getTodayDateString();
-        const lastResetDate = data.lastResetDate;
-        
-        // If date has changed, reset timeSpent
-        if (lastResetDate !== today) {
-            console.log("📅 New day detected, resetting timeSpent");
-            chrome.storage.local.set({ timeSpent: 0, lastResetDate: today });
-            callback(0);
-        } else {
-            callback(data.timeSpent || 0);
-        }
-    });
+async function getTimeSpent() {
+    const data = await chrome.storage.local.get(["timeSpent"]);
+    return data.timeSpent || 0;
 }
 
 // Set timeSpent, ensuring date is stored
 function setTimeSpent(timeSpent) {
-    const today = getTodayDateString();
-    chrome.storage.local.set({ timeSpent, lastResetDate: today });
+    chrome.storage.local.set({ timeSpent });
 }
 
 async function checkSiteAccess(tab) {
@@ -73,8 +65,6 @@ async function checkSiteAccess(tab) {
     if (lastResetDate?.lastResetDate !== today) {
         console.log("📅 New day detected, resetting timeSpent");
         chrome.storage.local.set({ timeSpent: 0, lastResetDate: today });
-    } else {
-        console.log("SAMEDAY");
     }
 
     console.log("on a site that has a time limit")
@@ -82,41 +72,41 @@ async function checkSiteAccess(tab) {
 }
 
 function startTracking(tabId) {
-    if (!!trackingInterval){return;}
+    if (!!trackingInterval) { return; }
 
     chrome.action.setIcon({
         path: {
-        "48": "icon-active.png"
+            "48": "icon-active.png"
         }
     });
 
-    trackingInterval = setInterval(() => {
+    trackingInterval = setInterval(async () => {
         console.log("Tracking time");
-        getTimeSpent((timeSpent) => {
-            timeSpent = timeSpent + 1000;
+        const timeSpent = await getTimeSpent();
+        const newTimeSpent = timeSpent + 1000;
 
-            if (timeSpent >= TIME_LIMIT) {
-                clearInterval(trackingInterval);
-                console.log("Ran out of time!")
-                // Navigate to the extension's time limit page
-                const redirectUrl = chrome.runtime.getURL("time-limit.html");
-                chrome.tabs.update(tabId, { url: redirectUrl });
-            } else {
-                console.log('setting timespent' + timeSpent)
-                setTimeSpent(timeSpent);
+        setTimeSpent(newTimeSpent);
 
-                const remainingSeconds = Math.floor((TIME_LIMIT - timeSpent) / 1000);
-                const remainingMinutes = Math.floor(remainingSeconds / 60);
-                const displaySeconds = remainingSeconds % 60;
+        if (newTimeSpent >= TIME_LIMIT) {
+            clearInterval(trackingInterval);
+            console.log("Ran out of time!")
+            // Navigate to the extension's time limit page
+            const redirectUrl = chrome.runtime.getURL("time-limit.html");
+            chrome.tabs.update(tabId, { url: redirectUrl });
+        }
 
-                // Badge text is limited to 4 characters, so show just minutes or a compact format
-                const badgeText = remainingMinutes > 0 
-                    ? `${remainingMinutes}m`  // e.g., "5m" 
-                    : `${displaySeconds}s`;   // e.g., "30s" for under 1 minute
+        console.log('setting timespent' + newTimeSpent)
+        const remainingSeconds = Math.floor((TIME_LIMIT - newTimeSpent) / 1000);
+        const remainingMinutes = Math.floor(remainingSeconds / 60);
+        const displaySeconds = remainingSeconds % 60;
 
-                chrome.action.setBadgeText({ text: badgeText });
-                            }
-        });
+        // Badge text is limited to 4 characters, so show just minutes or a compact format
+        const badgeText = remainingMinutes > 0
+            ? `${remainingMinutes}m`  // e.g., "5m" 
+            : `${displaySeconds}s`;   // e.g., "30s" for under 1 minute
+
+        chrome.action.setBadgeText({ text: badgeText });
+
     }, 1000);
 }
 
@@ -124,9 +114,9 @@ function stopTracking() {
 
     chrome.action.setIcon({
         path: {
-          "48": "icon.png"
+            "48": "icon.png"
         }
-      });
+    });
 
     if (trackingInterval) {
         console.log("Stopping tracking");
