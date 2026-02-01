@@ -29,8 +29,8 @@ async function setTimerValue(){
         const minutesSpent = Math.floor(timeSpent / 60000);
         const secondsSpent = Math.floor((timeSpent % 60000) / 1000);
         const timeRemaining = timeLimit - timeSpent;
-        const remainingMinutes = Math.floor(timeRemaining / 60000);
-        const remainingSeconds = Math.floor((timeRemaining % 60000) / 1000);
+        const remainingMinutes = Math.max(0, Math.floor(timeRemaining / 60000));
+        const remainingSeconds = Math.max(0, Math.floor((timeRemaining % 60000) / 1000));
 
         spentTimerDisplay.innerText = `Time Spent: ${minutesSpent || 0}:${(secondsSpent || 0).toString().padStart(2, '0')}`;
         remainingTimerDisplay.innerText = `Time Remaining: ${remainingMinutes}:${remainingSeconds.toString().padStart(2, '0')}`;
