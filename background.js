@@ -8,8 +8,15 @@ const TRACKED_SITES = [
     /^https?:\/\/(www\.)?reddit\.com(\/r\/[^\/]+)?\/?$/
 ];
 let trackingInterval = undefined;
+let trackedTabId = null;
 
 chrome.storage.local.set({ timeLimit: TIME_LIMIT });
+
+chrome.tabs.onRemoved.addListener((tabId) => {
+    if (tabId === trackedTabId) {
+        stopTracking();
+    }
+});
 
 chrome.tabs.onActivated.addListener((activeInfo) => {
     chrome.tabs.get(activeInfo.tabId, (tab) => {
@@ -71,7 +78,7 @@ async function checkSiteAccess(tab) {
 
 function startTracking(tabId) {
     if (!!trackingInterval) { return; }
-
+    trackedTabId = tabId;
     chrome.action.setIcon({
         path: {
             "48": "icon-active.png"
@@ -109,6 +116,7 @@ function startTracking(tabId) {
 }
 
 function stopTracking() {
+    trackedTabId = null;
 
     chrome.action.setIcon({
         path: {
