@@ -1,6 +1,7 @@
 console.log("🔄 Background script is alive1!");
 
 const TIME_LIMIT = 5 * 60 * 1000;
+const HARD_BLOCK_DAYS = [1] // Monday
 const TRACKED_SITES = [
     /^https?:\/\/(www\.)?youtube\.com\/feed\/subscriptions/,
     /^https?:\/\/(www\.)?youtube\.com\/?$/,
@@ -62,6 +63,14 @@ async function checkSiteAccess(tab) {
         stopTracking();
         return;
     }
+    
+    if (HARD_BLOCK_DAYS.includes(new Date().getDay())) {
+        console.log("Hard block day detected, blocking site");
+        //Redirect to a hard block page
+        const redirectUrl = chrome.runtime.getURL("time-limit.html");
+        chrome.tabs.update(tab.id, { url: redirectUrl });
+        return;
+    }
 
     // reset time spent if the date has changed
     const today = getTodayDateString();
@@ -79,6 +88,7 @@ async function checkSiteAccess(tab) {
 function startTracking(tabId) {
     if (!!trackingInterval) { return; }
     trackedTabId = tabId;
+
     chrome.action.setIcon({
         path: {
             "48": "icon-active.png"
