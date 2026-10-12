@@ -31,7 +31,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
     });
 });
 
-
+`
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.url || tab.url) {
         checkSiteAccess(tab);
