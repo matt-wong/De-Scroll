@@ -22,9 +22,12 @@ function getTodayDateString() {
 
 async function setTimerValue(){
         // Fetch time spent from storage (with automatic date-based reset)
-        const data = await chrome.storage.local.get(["timeSpent", "lastResetDate"]);
-        const timeSpent = data.timeSpent;
+        const data = await chrome.storage.local.get(["timeSpent", "lastResetDate", "timeLimit"]);
+        const timeSpent = data.timeSpent || 0;
         const lastResetDate = data.lastResetDate;
+        if (data.timeLimit) {
+            timeLimit = data.timeLimit;
+        }
 
         const minutesSpent = Math.floor(timeSpent / 60000);
         const secondsSpent = Math.floor((timeSpent % 60000) / 1000);
